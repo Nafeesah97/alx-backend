@@ -42,7 +42,8 @@ class Server:
 
     def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
         """hyper index"""
-        assert index is None or (isinstance(index, int) and 0 <= index < len(self.indexed_dataset()))
+        assert index is None or (isinstance(index, int) 
+                and 0 <= index < len(self.indexed_dataset()))
         assert isinstance(page_size, int) and page_size > 0
 
         indexed_dataset = self.indexed_dataset()

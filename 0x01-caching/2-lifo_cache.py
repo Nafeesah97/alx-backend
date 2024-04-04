@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """lifo cache"""
 from base_caching import BaseCaching
+from collections import OrderedDict
 
 
 class LIFOCache(BaseCaching):
@@ -9,6 +10,7 @@ class LIFOCache(BaseCaching):
     def __init__(self):
         """initialization"""
         super().__init__()
+        self.cache_data = OrderedDict()
 
     def put(self, key, item):
         """ Add an item in the cache

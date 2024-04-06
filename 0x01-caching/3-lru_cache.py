@@ -47,16 +47,13 @@ class LRUCache(BaseCaching):
             node = self.cache_data[key]
             node.value = item
             self._move_to_front(node)
-            del self.cache_data[key]
-            self.cache_data[key] = item
-
         else:
             if len(self.cache_data) == self.MAX_ITEMS:
                 print("DISCARD: {}".format(self.tail.prev.key))
                 del self.cache_data[self.tail.prev.key]
                 self._remove_node(self.tail.prev)
             new_node = Node(key, item)
-            self.cache_data[key] = item
+            self.cache_data[key] = new_node
             self._add_node(new_node)
 
     def get(self, key):

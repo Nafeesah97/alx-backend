@@ -16,7 +16,6 @@ class LRUCache(BaseCaching):
     def __init__(self):
         """initialization"""
         super().__init__()
-        self.cache = {}
         self.head = Node()
         self.tail = Node()
         self.head.next = self.tail
@@ -44,24 +43,24 @@ class LRUCache(BaseCaching):
     def put(self, key, item):
         """ Add an item in the cache
         """
-        if key in self.cache:
-            node = self.cache[key]
+        if key in self.cache_data:
+            node = self.cache_data[key]
             node.value = item
             self._move_to_front(node)
         else:
-            if len(self.cache) == self.MAX_ITEMS:
+            if len(self.cache_data) == self.MAX_ITEMS:
                 print("DISCARD: {}".format(self.tail.prev.key))
-                del self.cache[self.tail.prev.key]
+                del self.cache_data[self.tail.prev.key]
                 self._remove_node(self.tail.prev)
             new_node = Node(key, item)
-            self.cache[key] = new_node
+            self.cache_data[key] = new_node
             self._add_node(new_node)
 
     def get(self, key):
         """ Get an item by key
         """
-        if key in self.cache:
-            node = self.cache[key]
+        if key in self.cache_data:
+            node = self.cache_data[key]
             self._move_to_front(node)
             return node.value
         else:

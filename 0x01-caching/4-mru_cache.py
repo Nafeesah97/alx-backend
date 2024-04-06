@@ -11,26 +11,6 @@ class LRUCache(BaseCaching):
         super().__init__()
         self.cache_data = OrderedDict()
 
-
-    def _add_node(self, node):
-        """Add a node to the front of the linked list"""
-        node.prev = self.head
-        node.next = self.head.next
-        self.head.next.prev = node
-        self.head.next = node
-
-    def _remove_node(self, node):
-        """Remove a node from the linked list"""
-        prev_node = node.prev
-        next_node = node.next
-        prev_node.next = next_node
-        next_node.prev = prev_node
-
-    def _move_to_front(self, node):
-        """Move a node to the front of the linked list"""
-        self._remove_node(node)
-        self._add_node(node)
-
     def put(self, key, item):
         """ Add an item in the cache """
         if key is None or item is None:

@@ -41,8 +41,7 @@ class LRUCache(BaseCaching):
         self._add_node(node)
 
     def put(self, key, item):
-        """ Add an item in the cache
-        """
+        """ Add an item in the cache """
         if key in self.cache_data:
             node = self.cache_data[key]
             node.value = item
@@ -57,11 +56,9 @@ class LRUCache(BaseCaching):
             self._add_node(new_node)
 
     def get(self, key):
-        """ Get an item by key
-        """
-        if key in self.cache_data:
-            node = self.cache_data[key]
-            self._move_to_front(node)
-            return node.value
-        else:
+        """ Get an item by key """
+        if key is None or key not in self.cache_data:
             return None
+        node = self.cache_data[key]
+        self._move_to_front(node)
+        return node.value

@@ -1,14 +1,7 @@
 #!/usr/bin/python3
 """least recently used cache"""
 from base_caching import BaseCaching
-
-
-class Node:
-    def __init__(self, key=None, value=None):
-        self.key = key
-        self.value = value
-        self.prev = None
-        self.next = None
+from collections import OrderedDict
 
 
 class LRUCache(BaseCaching):
@@ -16,10 +9,8 @@ class LRUCache(BaseCaching):
     def __init__(self):
         """initialization"""
         super().__init__()
-        self.head = Node()
-        self.tail = Node()
-        self.head.next = self.tail
-        self.tail.prev = self.head
+        self.cache_data = OrderedDict()
+
 
     def _add_node(self, node):
         """Add a node to the front of the linked list"""

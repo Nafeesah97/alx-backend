@@ -15,15 +15,25 @@ class LIFOCache(BaseCaching):
     def put(self, key, item):
         """ Add an item in the cache
         """
-        if key is not None and item is not None:
-            max = self.MAX_ITEMS
-            if len(self.cache_data) >= max:
-                last_key, _ = self.cache_data.popitem(True)
-                print("DISCARD: {}".format(last_key))
-        if key in self.cache_data:
-            del self.cache_data[key]
+        if key is None or item is None:
+            return
 
-        self.cache_data[key] = item
+        # Check if key already exists
+        if key in self.cache_data:
+            # Move the existing item to the end (update)
+            self.cache_data[key] = item
+            # Remove and re-add to simulate "most recently used"
+            evicted = self.cache_data.pop(key)
+            self.cache_data[key] = evicted
+        else:
+            # Add new item
+            self.cache_data[key] = item
+
+        # Check for overflow and discard least recently used (except updated key)
+        if len(self.cache_data) > BaseCaching.MAX_ITEMS:
+            discarded_key, _ = self.cache_data.popitem()
+            if discarded_key != key:  # Don't discard the updated key
+                print(f"DISCARD: {discarded_key}")
 
     def get(self, key):
         """ Get an item by key

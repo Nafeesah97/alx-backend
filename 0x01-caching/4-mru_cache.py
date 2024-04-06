@@ -4,7 +4,7 @@ from base_caching import BaseCaching
 from collections import OrderedDict
 
 
-class LRUCache(BaseCaching):
+class MRUCache(BaseCaching):
     """deletes least recently used cache"""
     def __init__(self):
         """initialization"""

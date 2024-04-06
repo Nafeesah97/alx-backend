@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""least recently used cache"""
+"""most recently used cache"""
 from base_caching import BaseCaching
 from collections import OrderedDict
 
@@ -37,7 +37,7 @@ class LRUCache(BaseCaching):
             return
         if key not in self.cache_data:
             if len(self.cache_data) + 1 > BaseCaching.MAX_ITEMS:
-                lru_key, _ = self.cache_data.popitem(True)
+                lru_key, _ = self.cache_data.popitem(False)
                 print("DISCARD:", lru_key)
             self.cache_data[key] = item
             self.cache_data.move_to_end(key, last=False)
@@ -47,7 +47,6 @@ class LRUCache(BaseCaching):
     def get(self, key):
         """Retrieves an item by key.
         """
-        
         if key is not None and key in self.cache_data:
             self.cache_data.move_to_end(key, last=False)
         return self.cache_data.get(key, None)

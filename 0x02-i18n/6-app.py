@@ -46,12 +46,15 @@ def before_request() -> None:
 @babel.localeselector
 def get_locale() -> str:
     """Gets the locale language"""
-    if (
-        'locale' in request.args and
-        request.args['locale'] in app.config['LANGUAGES']):
-        return request.args['locale']
-    else:
-        return request.accept_languages.best_match(app.config["LANGUAGES"])
+    locale = request.args.get('locale', '')
+    if locale in app.config["LANGUAGES"]:
+        return locale
+    if g.user and g.user['locale'] in app.config["LANGUAGES"]:
+        return g.user['locale']
+    header_locale = request.headers.get('locale', '')
+    if header_locale in app.config["LANGUAGES"]:
+        return header_locale
+    return request.accept_languages.best_match(app.config["LANGUAGES"])
 
 
 @app.route('/')
@@ -61,7 +64,7 @@ def get_index() -> str:
     home_title = _('home_title')
     home_header = _('home_header')
     return render_template(
-            '5-index.html', home_title=home_title,
+            '6-index.html', home_title=home_title,
             home_header=home_header, get_locale=get_locale)
 
 

@@ -60,7 +60,9 @@ def get_index() -> str:
     """
     home_title = _('home_title')
     home_header = _('home_header')
-    return render_template('5-index.html')
+    return render_template(
+            '5-index.html', home_title=home_title,
+            home_header=home_header, get_locale=get_locale)
 
 
 if __name__ == '__main__':

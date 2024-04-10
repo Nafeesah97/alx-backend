@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""app"""
+"""app
+"""
 from flask import Flask, render_template
 
 

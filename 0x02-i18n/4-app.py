@@ -22,8 +22,9 @@ babel = Babel(app)
 @babel.localeselector
 def get_locale() -> str:
     """Gets the locale language"""
-    if 'locale' in request.args
-    and request.args['locale'] in app.config['LANGUAGES']:
+    if (
+        'locale' in request.args and
+        request.args['locale'] in app.config['LANGUAGES']):
         return request.args['locale']
     else:
         return request.accept_languages.best_match(app.config["LANGUAGES"])

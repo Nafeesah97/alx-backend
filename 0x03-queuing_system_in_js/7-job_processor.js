@@ -1,5 +1,6 @@
 import kue from 'kue';
-const queue = kue.createQueue();
+const concurrency = 2;
+const queue = kue.createQueue({ concurrency });
 
 const blacklisted = [4153518780, 4153518781];
 
@@ -25,8 +26,7 @@ const sendNotification = (phoneNumber, message, job, done) => {
   }
 };
 
-const concurrency = 2;
-const pushNotificationQueue = queue.createQueue({ concurrency });
+const pushNotificationQueue = queue;
 
 jobs.forEach(jobData => {
   const job = pushNotificationQueue.create('push_notification_code_2', jobData).save(function(err) {

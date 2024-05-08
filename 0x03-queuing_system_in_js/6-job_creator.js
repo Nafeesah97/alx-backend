@@ -2,8 +2,8 @@ import kue from 'kue';
 const queue = kue.createQueue();
 
 const jobData = {
-  phoneNumber: string,
-  message: string,
+  phoneNumber: "+1234567890",
+  message: "Your notification message here",
 };
 
 const job = queue.create('push_notification_code', jobData).save(function(err) {

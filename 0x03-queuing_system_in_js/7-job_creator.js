@@ -53,7 +53,7 @@ const sendNotification = (job, done) => {
   let progressValue = 0; 
   
   const progressUpdateInterval = setInterval(() => {
-    progressValue += 1;
+    progressValue += 10;
   
     job.progress(progressValue, totalProgress);
   

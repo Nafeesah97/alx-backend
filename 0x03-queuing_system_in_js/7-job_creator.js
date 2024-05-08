@@ -70,8 +70,8 @@ queue.on('job complete', function(id) {
     console.log('Notification job completed');
   });
       
-queue.on('job failed', function(id) {
-  console.log('Notification job failed');
+queue.on('job failed', function(id, err) {
+  console.log('Notification job failed', err);
 });
 
 jobs.forEach(jobData => {

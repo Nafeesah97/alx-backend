@@ -1,8 +1,9 @@
 import kue from 'kue';
+
 const concurrency = 2;
 const queue = kue.createQueue({ concurrency });
 
-const blacklisted = [4153518780, 4153518781];
+const blacklisted = ['4153518780', '4153518781']; // Corrected to string values
 
 const jobs = [
   {
@@ -57,7 +58,7 @@ const sendNotification = (phoneNumber, message, job, done) => {
       clearInterval(progressUpdateInterval);
       return;
     }
-    if (progressValue = 50) {
+    if (progressValue === 50) {
       console.log(`Sending notification to ${phoneNumber}, with message: ${message}`);
     }
   }, 1000);

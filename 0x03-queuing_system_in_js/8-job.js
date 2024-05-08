@@ -25,3 +25,5 @@ const createPushNotificationsJobs = (jobs, queue) => {
     });
   });
 }
+
+module.exports = createPushNotificationsJobs;

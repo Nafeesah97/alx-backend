@@ -1,5 +1,4 @@
-import kue from 'kue';
-const queue = kue.createQueue();
+import { Queue, Job } from 'kue';
 
 const createPushNotificationsJobs = (jobs, queue) => {
   if (!Array.isArray(jobs)) {

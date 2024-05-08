@@ -1,45 +1,86 @@
+import sinon from 'sinon';
 import { expect } from 'chai';
-import kue from 'kue';
-import createPushNotificationsJobs from './8-job';
+import { createQueue } from 'kue';
+import createPushNotificationsJobs from './8-job.js';
 
 describe('createPushNotificationsJobs', () => {
-  let queue;
+  const BIG_BROTHER = sinon.spy(console);
+  const QUEUE = createQueue({ name: 'push_notification_code_test' });
 
-  beforeEach(() => {
-    queue = kue.createQueue({ disableSearch: true, jobEvents: false, redis: { db: 3 } });
-    kue.Job.rangeByType('push_notification_code_3', 'inactive', 0, -1, 'asc', (err, jobs) => {
-      jobs.forEach(job => job.remove());
-    });
+  before(() => {
+    QUEUE.testMode.enter(true);
+  });
+
+  after(() => {
+    QUEUE.testMode.clear();
+    QUEUE.testMode.exit();
   });
 
   afterEach(() => {
-    queue.testMode.exit();
+    BIG_BROTHER.log.resetHistory();
   });
 
-  it('display a error message if jobs is not an array', async () => {
-    try {
-      await createPushNotificationsJobs({}, queue);
-    } catch (error) {
-      expect(error).to.be.an.instanceOf(Error);
-      expect(error.message).to.equal('Jobs is not an array');
-    }
+  it('displays an error message if jobs is not an array', () => {
+    expect(
+      createPushNotificationsJobs.bind(createPushNotificationsJobs, {}, QUEUE)
+    ).to.throw('Jobs is not an array');
   });
 
-  it('create two new jobs to the queue', async () => {
-    const list = [
-      { phoneNumber: '1234567890', message: 'Test message 1' },
-      { phoneNumber: '9876543210', message: 'Test message 2' }
+  it('adds jobs to the queue with the correct type', (done) => {
+    expect(QUEUE.testMode.jobs.length).to.equal(0);
+    const jobInfos = [
+      {
+        phoneNumber: '44556677889',
+        message: 'Use the code 1982 to verify your account',
+      },
+      {
+        phoneNumber: '98877665544',
+        message: 'Use the code 1738 to verify your account',
+      },
     ];
-
-    await createPushNotificationsJobs(list, queue);
-
-    queue.testMode.jobs.getCount((err, count) => {
-      expect(count).to.equal(2);
+    createPushNotificationsJobs(jobInfos, QUEUE);
+    expect(QUEUE.testMode.jobs.length).to.equal(2);
+    expect(QUEUE.testMode.jobs[0].data).to.deep.equal(jobInfos[0]);
+    expect(QUEUE.testMode.jobs[0].type).to.equal('push_notification_code_3');
+    QUEUE.process('push_notification_code_3', () => {
+      expect(
+        BIG_BROTHER.log
+          .calledWith('Notification job created:', QUEUE.testMode.jobs[0].id)
+      ).to.be.true;
+      done();
     });
+  });
 
-    queue.testMode.jobs.getAll(async (err, jobs) => {
-      expect(jobs[0].data).to.deep.equal(list[0]);
-      expect(jobs[1].data).to.deep.equal(list[1]);
+  it('registers the progress event handler for a job', (done) => {
+    QUEUE.testMode.jobs[0].addListener('progress', () => {
+      expect(
+        BIG_BROTHER.log
+          .calledWith('Notification job', QUEUE.testMode.jobs[0].id, '25% complete')
+      ).to.be.true;
+      done();
     });
+    QUEUE.testMode.jobs[0].emit('progress', 25);
+  });
+
+  it('registers the failed event handler for a job', (done) => {
+    QUEUE.testMode.jobs[0].addListener('failed', () => {
+      expect(
+        BIG_BROTHER.log
+          .calledWith('Notification job', QUEUE.testMode.jobs[0].id, 'failed:', 'Failed to send')
+      ).to.be.true;
+      done();
+    });
+    QUEUE.testMode.jobs[0].emit('failed', new Error('Failed to send'));
+  });
+
+  it('registers the complete event handler for a job', (done) => {
+    QUEUE.testMode.jobs[0].addListener('complete', () => {
+      expect(
+        BIG_BROTHER.log
+          .calledWith('Notification job', QUEUE.testMode.jobs[0].id, 'completed')
+      ).to.be.true;
+      done();
+    });
+    QUEUE.testMode.jobs[0].emit('complete');
   });
 });

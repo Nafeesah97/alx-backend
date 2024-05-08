@@ -16,17 +16,30 @@ describe('createPushNotificationsJobs', () => {
     queue.testMode.exit();
   });
 
+  it('display a error message if jobs is not an array', async () => {
+    try {
+      await createPushNotificationsJobs({}, queue);
+    } catch (error) {
+      expect(error).to.be.an.instanceOf(Error);
+      expect(error.message).to.equal('Jobs is not an array');
+    }
+  });
+
   it('create two new jobs to the queue', async () => {
     const list = [
       { phoneNumber: '1234567890', message: 'Test message 1' },
       { phoneNumber: '9876543210', message: 'Test message 2' }
     ];
-  
+
     await createPushNotificationsJobs(list, queue);
-  
-    expect(queue.testMode.jobs.length).to.equal(2);
-  
-    expect(queue.testMode.jobs[0].data).to.deep.equal(list[0]);
-    expect(queue.testMode.jobs[1].data).to.deep.equal(list[1]);
+
+    queue.testMode.jobs.getCount((err, count) => {
+      expect(count).to.equal(2);
+    });
+
+    queue.testMode.jobs.getAll(async (err, jobs) => {
+      expect(jobs[0].data).to.deep.equal(list[0]);
+      expect(jobs[1].data).to.deep.equal(list[1]);
+    });
   });
 });
